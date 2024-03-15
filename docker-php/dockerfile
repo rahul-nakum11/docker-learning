@@ -1,0 +1,4 @@
+FROM php:latest
+COPY . .
+#RUN composer install
+EXPOSE 8080
