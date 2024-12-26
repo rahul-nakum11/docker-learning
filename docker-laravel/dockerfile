@@ -1,0 +1,29 @@
+FROM php:latest
+
+# Install necessary system dependencies and PHP extensions
+RUN apt-get update && apt-get install -y \
+    libzip-dev zip unzip git \
+    libonig-dev \
+    libcurl4-openssl-dev \
+    && docker-php-ext-install pdo_mysql zip
+
+# Install Composer globally
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Install Laravel installer globally
+RUN composer global require laravel/installer
+
+# Add Composer's global bin directory to PATH
+ENV PATH="$PATH:/root/.composer/vendor/bin"
+
+# Create a new Laravel application
+RUN laravel new /app
+
+# Set the working directory
+WORKDIR /app
+
+# Expose the Laravel default port
+EXPOSE 8000
+
+# Run Laravel's built-in development server
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
